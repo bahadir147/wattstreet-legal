@@ -8,7 +8,7 @@ These answers are based on what the code does as of 2026-09-25. Checked:
 - `Gameplay/Ads/*`: an ad abstraction only, with no network SDK. `AdAnalytics` only writes to the local debug log.
 - PlayerPrefs: settings, language and ad cooldowns.
 - `Haptics.cs`: local only.
-- `UnityConnectSettings`: Analytics, Cloud Diagnostics and Performance Reporting are off.
+- `UnityConnectSettings`: Analytics and Performance Reporting are off. Cloud Diagnostics crash and exception reporting is **on** (device model, OS, app version, stack trace; no personal data).
 
 Legend: **[NOW]** means true for the current build. **[ADMOB]** means add it when Google AdMob is integrated. **[IAP]** means add it if in-app purchases ship. **[UNITY-ENGINE]** means it depends on the Unity engine settings (see the last section).
 
@@ -36,6 +36,7 @@ Legend: **[NOW]** means true for the current build. **[ADMOB]** means add it whe
 | **App activity › App interactions** (ad views and clicks) | Yes | **Yes** | No | Required* | Advertising or marketing, Analytics | [ADMOB] |
 | **App info and performance › Diagnostics** (AdMob SDK diagnostics) | Yes | **Yes** | No | Required* | Analytics, Fraud prevention | [ADMOB] |
 | **Financial info › Purchase history** (product ID and order ID only; payment details stay with Google Play) | Yes | No | No | Required for buyers | App functionality | [IAP] |
+| **App info and performance › Crash logs** (Unity Cloud Diagnostics) | Yes | No | No | Required | App functionality (fixing bugs) | [NOW] |
 | **App info and performance › Diagnostics** (Unity engine hardware statistics) | Yes | No | No | Required | Analytics | [UNITY-ENGINE], only if `submitAnalytics` stays on |
 
 \*The ads themselves are opt-in (rewarded, user-initiated). Once integrated, however, the SDK runs whenever ads are enabled, so Google's own guidance is to declare AdMob data as *not optional*. Cross-check with Google's page "Google Mobile Ads SDK: Play data disclosure" when integrating, because it lists the exact types for the SDK version you use.
@@ -53,6 +54,7 @@ Not collected, so leave these unticked: Personal info (name, email, user IDs lin
 | Identifiers | **Device ID** (IDFA) | Third-Party Advertising, Analytics | Yes | **Yes** (with ATT consent) | [ADMOB] |
 | Usage Data | **Advertising Data**, **Product Interaction** | Third-Party Advertising, Analytics | Yes | Yes | [ADMOB] |
 | Location | **Coarse Location** (IP-derived) | Third-Party Advertising, Analytics | No | Yes | [ADMOB] |
+| Diagnostics | **Crash Data** (Unity Cloud Diagnostics) | App Functionality | No | No | [NOW] |
 | Diagnostics | **Other Diagnostic Data / Performance Data** | Analytics | No | No | [ADMOB], and [UNITY-ENGINE] if hardware stats stay on |
 | Purchases | **Purchase History** | App Functionality | Yes | No | [IAP] |
 
