@@ -2,7 +2,8 @@
 
 These answers are based on what the code does as of 2026-09-25. Checked:
 
-- `Packages/manifest.json`: authentication, cloudsave, remote-config and core. There is no UGS Analytics, Ads, IAP or Firebase package.
+- `Packages/manifest.json`: authentication, cloudsave, remote-config, core, Google Mobile Ads and **Unity IAP 5 (`com.unity.purchasing`)**. There is no UGS Analytics or Firebase package.
+- `Gameplay/Iap/*`: Unity IAP with Google Play Billing / StoreKit. The game receives the store's purchase token/receipt (product ID, order/transaction ID, purchase date), validates it on the device, and keeps product + transaction IDs in the save (`GridSave.purchases`, also in the Cloud Save backup). No card or payment data reaches the game.
 - `GridCloudSave.cs`: key `city_v1`, anonymous sign-in, optional Unity account linking with no UI.
 - `CityQuestRemoteConfig.cs`
 - `Gameplay/Ads/*`: an ad abstraction only, with no network SDK. `AdAnalytics` only writes to the local debug log.
@@ -10,7 +11,7 @@ These answers are based on what the code does as of 2026-09-25. Checked:
 - `Haptics.cs`: local only.
 - `UnityConnectSettings`: Analytics and Performance Reporting are off. Cloud Diagnostics crash and exception reporting is **on** (device model, OS, app version, stack trace; no personal data).
 
-Legend: **[NOW]** means true for the current build. **[ADMOB]** means add it when Google AdMob is integrated. **[IAP]** means add it if in-app purchases ship. **[UNITY-ENGINE]** means it depends on the Unity engine settings (see the last section).
+Legend: **[NOW]** means true for the current build. **[ADMOB]** means add it when Google AdMob is integrated. **[IAP]** marks the in-app purchase rows; IAP ships in 1.0, so they are now true (**[NOW]**). **[UNITY-ENGINE]** means it depends on the Unity engine settings (see the last section).
 
 ## Google Play › Data safety
 
@@ -35,8 +36,8 @@ Legend: **[NOW]** means true for the current build. **[ADMOB]** means add it whe
 | **Location › Approximate location** (AdMob derives it from the IP address) | Yes | **Yes** | No | Required* | Advertising or marketing, Analytics, Fraud prevention | [ADMOB] |
 | **App activity › App interactions** (ad views and clicks) | Yes | **Yes** | No | Required* | Advertising or marketing, Analytics | [ADMOB] |
 | **App info and performance › Diagnostics** (AdMob SDK diagnostics) | Yes | **Yes** | No | Required* | Analytics, Fraud prevention | [ADMOB] |
-| **Financial info › Purchase history** (product ID and order ID only; payment details stay with Google Play) | Yes | No | No | Required for buyers | App functionality | [IAP] |
-| **App info and performance › Crash logs** (Unity Cloud Diagnostics) | Yes | No | No | Required | App functionality (fixing bugs) | [NOW] |
+| **Financial info › Purchase history** (product ID, order/transaction ID and purchase token only; payment details stay with Google Play) | Yes | No | No | Required for buyers | App functionality | [NOW] [IAP] |
+| **App info and performance › Crash logs** (Unity Cloud Diagnostics) | Yes | No | No | Required | App functionality, Analytics | [NOW] |
 | **App info and performance › Diagnostics** (Unity engine hardware statistics) | Yes | No | No | Required | Analytics | [UNITY-ENGINE], only if `submitAnalytics` stays on |
 
 \*The ads themselves are opt-in (rewarded, user-initiated). Once integrated, however, the SDK runs whenever ads are enabled, so Google's own guidance is to declare AdMob data as *not optional*. Cross-check with Google's page "Google Mobile Ads SDK: Play data disclosure" when integrating, because it lists the exact types for the SDK version you use.
@@ -56,9 +57,9 @@ Not collected, so leave these unticked: Personal info (name, email, user IDs lin
 | Location | **Coarse Location** (IP-derived) | Third-Party Advertising, Analytics | No | Yes | [ADMOB] |
 | Diagnostics | **Crash Data** (Unity Cloud Diagnostics) | App Functionality | No | No | [NOW] |
 | Diagnostics | **Other Diagnostic Data / Performance Data** | Analytics | No | No | [ADMOB], and [UNITY-ENGINE] if hardware stats stay on |
-| Purchases | **Purchase History** | App Functionality | Yes | No | [IAP] |
+| Purchases | **Purchase History** | App Functionality | Yes | No | [NOW] [IAP] |
 
-Current build without ads: "Data Linked to You" contains Gameplay Content and User ID (both App Functionality). There is no "Data Used to Track You". Age rating: 12+ (the equivalent of a 13+ audience). This is not a "Made for Kids" app.
+Current build (1.0, with IAP): "Data Linked to You" also contains Purchase History (App Functionality). Without ads it would be Gameplay Content, User ID and Purchase History (all App Functionality). There is no "Data Used to Track You". Age rating: 12+ (the equivalent of a 13+ audience). This is not a "Made for Kids" app.
 
 ## Unity engine settings (decide before release)
 - `ProjectSettings.asset › submitAnalytics: 1` is the Unity hardware statistics setting.
