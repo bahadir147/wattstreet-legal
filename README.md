@@ -1,3 +1,5 @@
+> **Moved:** these pages now live at https://synversegames.app/legal/wattstreet/ — every page here redirects there (canonical + meta refresh). Edit the copy in the synversegames website (website/legal), not this repo; a rebuild with `_src/build.py` would drop the redirects.
+
 # Watt Street legal site
 
 This is a static site for **Watt Street: Idle Power Tycoon** (Synverse, `com.synverse.wattstreet`). It holds three documents:
